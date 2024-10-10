@@ -26,7 +26,7 @@ if __name__ == "__main__":
     parser.add_argument("--seed", default=42, type=int)
     parser.add_argument("--checkpoint", type=str, default=None)
     # DataModule
-    parser.add_argument("--batch_size", type=int, default=512)
+    parser.add_argument("--batch_size", type=int, default=256)
     parser.add_argument("--num_workers", type=int, default=4)
     parser.add_argument("--data_dir", type=str, default="human_brain_3k")
     parser.add_argument("--backed", action="store_true", default=False)

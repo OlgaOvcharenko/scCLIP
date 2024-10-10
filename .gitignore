@@ -9,3 +9,11 @@ benchmarks/*
 jupyters/*
 results/*
 
+logs/
+data/Fetal/
+data/human_cite/
+data/human_multiome/
+data/simulated/
+results/
+scclip.egg-info/
+scclip/__pycache__/
