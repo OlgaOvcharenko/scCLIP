@@ -31,7 +31,7 @@ if __name__ == "__main__":
     parser.add_argument("--data_dir", type=str, default="human_brain_3k")
     parser.add_argument("--backed", action="store_true", default=False)
     parser.add_argument("--split", default=0.9)
-    parser.add_argument("--n_top_genes", type=int, default=None)
+    parser.add_argument("--n_top_genes", type=int, default=2000)
     parser.add_argument("--binary", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--dist", type=str, default=None)
     parser.add_argument("--mask", type=float, default=None)

@@ -1,3 +1,4 @@
+import time
 from torch.utils.data import Dataset, random_split, Subset
 import muon as mu
 from mudata import MuData
@@ -133,6 +134,45 @@ class BaseDataset(Dataset):
             x[index] = 0
         return x
 
+    # def _preprocess_rna(self):
+    #     rna = self.mdata.mod["rna"]
+    #     # rna.var_names_make_unique()
+
+    #     # rna.var['mt'] = rna.var_names.str.startswith('MT-')
+    #     # sc.pp.calculate_qc_metrics(rna, qc_vars=['mt'], percent_top=None, log1p=False, inplace=True)
+
+    #     # # control quality
+    #     # mu.pp.filter_var(rna, 'n_cells_by_counts', lambda x: x >= 3)
+    #     # mu.pp.filter_obs(rna, 'n_genes_by_counts', lambda x: (x >= 200) & (x < 5000))
+    #     # mu.pp.filter_obs(rna, 'total_counts', lambda x: x < 15000)
+    #     # mu.pp.filter_obs(rna, 'pct_counts_mt', lambda x: x < 20)
+
+    #     rna = rna[
+    #         :,
+    #         [
+    #             gene
+    #             for gene in rna.var_names
+    #             if not str(gene).startswith(tuple(["ERCC", "MT-", "mt-", "mt"]))
+    #         ],
+    #     ].copy()
+    #     # sc.pp.filter_cells(rna, min_genes=200) #, max_counts=15000, max_genes=5000)
+    #     # sc.pp.filter_genes(rna, min_cells=3)
+    #     sc.pp.normalize_total(rna, target_sum=1e4)
+    #     sc.pp.log1p(rna)
+
+    #     if isinstance(self.n_top_genes, int):
+    #         if self.n_top_genes > 0:
+    #             sc.pp.highly_variable_genes(
+    #                 rna, n_top_genes=self.n_top_genes, inplace=False, subset=True
+    #             )  # batch_key='batch',
+    #     elif self.n_top_genes is not None:
+    #         if len(self.n_top_genes) != len(rna.var_names):
+    #             rna = self.reindex_genes(rna, self.n_top_genes)
+
+    #     if self.binary:
+    #         rna.X = maxabs_scale(rna.X)
+    #     self.mdata.mod["rna"] = rna
+
     def _preprocess_rna(self):
         rna = self.mdata.mod["rna"]
         # rna.var_names_make_unique()
@@ -154,19 +194,19 @@ class BaseDataset(Dataset):
                 if not str(gene).startswith(tuple(["ERCC", "MT-", "mt-", "mt"]))
             ],
         ].copy()
-        # sc.pp.filter_cells(rna, min_genes=200) #, max_counts=15000, max_genes=5000)
-        # sc.pp.filter_genes(rna, min_cells=3)
-        sc.pp.normalize_total(rna, target_sum=1e4)
-        sc.pp.log1p(rna)
+        # # sc.pp.filter_cells(rna, min_genes=200) #, max_counts=15000, max_genes=5000)
+        # # sc.pp.filter_genes(rna, min_cells=3)
+        # sc.pp.normalize_total(rna, target_sum=1e4)
+        # sc.pp.log1p(rna)
 
-        if isinstance(self.n_top_genes, int):
-            if self.n_top_genes > 0:
-                sc.pp.highly_variable_genes(
-                    rna, n_top_genes=self.n_top_genes, inplace=False, subset=True
-                )  # batch_key='batch',
-        elif self.n_top_genes is not None:
-            if len(self.n_top_genes) != len(rna.var_names):
-                rna = self.reindex_genes(rna, self.n_top_genes)
+        # if isinstance(self.n_top_genes, int):
+        #     if self.n_top_genes > 0:
+        #         sc.pp.highly_variable_genes(
+        #             rna, n_top_genes=self.n_top_genes, inplace=False, subset=True
+        #         )  # batch_key='batch',
+        # elif self.n_top_genes is not None:
+        #     if len(self.n_top_genes) != len(rna.var_names):
+        #         rna = self.reindex_genes(rna, self.n_top_genes)
 
         if self.binary:
             rna.X = maxabs_scale(rna.X)
@@ -202,6 +242,44 @@ class BaseDataset(Dataset):
             x[index] = 0
         return x
 
+    # def _preprocess_atac(self):
+    #     atac = self.mdata.mod["atac"]
+    #     # sc.pp.calculate_qc_metrics(atac, percent_top=None, log1p=False, inplace=True)
+    #     # mu.pp.filter_var(atac, 'n_cells_by_counts', lambda x: x >= 10)
+    #     # mu.pp.filter_obs(atac, 'n_genes_by_counts', lambda x: (x >= 500) & (x <= 15000))
+    #     # mu.pp.filter_obs(atac, 'total_counts', lambda x: (x >= 1000) & (x <= 40000))
+
+    #     atac.X[atac.X > 0] = 1
+    #     atac.var_names_make_unique()
+
+    #     if isinstance(self.n_top_peaks, int):
+    #         # epi.pp.select_var_feature(atac, nb_features=self.n_top_peaks, show=False, copy=False)
+    #         sc.pp.highly_variable_genes(
+    #             atac,
+    #             n_top_genes=self.n_top_peaks,
+    #             batch_key="batch",
+    #             inplace=False,
+    #             subset=True,
+    #         )
+    #     elif self.n_top_peaks is not None:
+    #         if len(self.n_top_peaks) != len(atac.var_names):
+    #             raise ValueError('n_top_peaks must be None or a list of length {}'.format(len(atac.var_names)))
+    #             # atac = self.reindex_peak(atac, self.n_top_peaks)
+    #     elif self.linked:
+    #         print(
+    #             "Linking {} peaks to {} genes".format(
+    #                 atac.shape[1], self.mdata.mod["rna"].shape[1]
+    #             ),
+    #             flush=True,
+    #         )
+    #         gene_peak_links = self._get_gene_peak_links(dist=self.linked)
+    #         peak_index = np.unique(gene_peak_links[1])
+    #         gene_index = np.unique(gene_peak_links[0])
+    #         atac = atac[:, peak_index].copy()
+    #         self.mdata.mod["rna"] = self.mdata.mod["rna"][:, gene_index].copy()
+
+    #     self.mdata.mod["atac"] = atac
+
     def _preprocess_atac(self):
         atac = self.mdata.mod["atac"]
         # sc.pp.calculate_qc_metrics(atac, percent_top=None, log1p=False, inplace=True)
@@ -212,31 +290,31 @@ class BaseDataset(Dataset):
         atac.X[atac.X > 0] = 1
         atac.var_names_make_unique()
 
-        if isinstance(self.n_top_peaks, int):
-            # epi.pp.select_var_feature(atac, nb_features=self.n_top_peaks, show=False, copy=False)
-            sc.pp.highly_variable_genes(
-                atac,
-                n_top_genes=self.n_top_peaks,
-                batch_key="batch",
-                inplace=False,
-                subset=True,
-            )
-        elif self.n_top_peaks is not None:
-            if len(self.n_top_peaks) != len(atac.var_names):
-                raise ValueError('n_top_peaks must be None or a list of length {}'.format(len(atac.var_names)))
-                # atac = self.reindex_peak(atac, self.n_top_peaks)
-        elif self.linked:
-            print(
-                "Linking {} peaks to {} genes".format(
-                    atac.shape[1], self.mdata.mod["rna"].shape[1]
-                ),
-                flush=True,
-            )
-            gene_peak_links = self._get_gene_peak_links(dist=self.linked)
-            peak_index = np.unique(gene_peak_links[1])
-            gene_index = np.unique(gene_peak_links[0])
-            atac = atac[:, peak_index].copy()
-            self.mdata.mod["rna"] = self.mdata.mod["rna"][:, gene_index].copy()
+        # if isinstance(self.n_top_peaks, int):
+        #     # epi.pp.select_var_feature(atac, nb_features=self.n_top_peaks, show=False, copy=False)
+        #     sc.pp.highly_variable_genes(
+        #         atac,
+        #         n_top_genes=self.n_top_peaks,
+        #         batch_key="batch",
+        #         inplace=False,
+        #         subset=True,
+        #     )
+        # elif self.n_top_peaks is not None:
+        #     if len(self.n_top_peaks) != len(atac.var_names):
+        #         raise ValueError('n_top_peaks must be None or a list of length {}'.format(len(atac.var_names)))
+        #         # atac = self.reindex_peak(atac, self.n_top_peaks)
+        # elif self.linked:
+        #     print(
+        #         "Linking {} peaks to {} genes".format(
+        #             atac.shape[1], self.mdata.mod["rna"].shape[1]
+        #         ),
+        #         flush=True,
+        #     )
+        #     gene_peak_links = self._get_gene_peak_links(dist=self.linked)
+        #     peak_index = np.unique(gene_peak_links[1])
+        #     gene_index = np.unique(gene_peak_links[0])
+        #     atac = atac[:, peak_index].copy()
+        #     self.mdata.mod["rna"] = self.mdata.mod["rna"][:, gene_index].copy()
 
         self.mdata.mod["atac"] = atac
 
