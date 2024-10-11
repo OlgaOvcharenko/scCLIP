@@ -103,6 +103,7 @@ if __name__ == "__main__":
             binary=args.binary,
             use_seq=args.use_seq,
             mask=args.mask,
+            cell_type=args.cell_type,
         )
 
         args.peaks = dm.dataset.mdata.mod["atac"].var
@@ -187,6 +188,7 @@ if __name__ == "__main__":
             n_top_genes=model.config.genes.index,
             binary=model.config.binary,
             use_seq=model.config.use_seq,
+            cell_type=args.cell_type,
         )
 
     if not args.fast_dev_run:
@@ -207,6 +209,7 @@ if __name__ == "__main__":
                 n_top_genes=model.config.genes.index,
                 binary=model.config.binary,
                 use_seq=model.config.use_seq,
+                cell_type=args.cell_type,
             )
         else:
             rna_dm = None
@@ -219,8 +222,9 @@ if __name__ == "__main__":
                 n_top_genes=model.config.genes.index,
                 binary=model.config.binary,
                 use_seq=model.config.use_seq,
+                cell_type=args.cell_type,
             )
         else:
             atac_dm = None
 
-        model.get_batch_features(dataloader, atac_dm, rna_dm, out_dir=out_dir)
+        model.get_batch_features(dataloader, atac_dm, rna_dm, out_dir=out_dir, celltype=args.cell_type)

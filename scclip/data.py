@@ -50,6 +50,8 @@ class BaseDataset(Dataset):
                 self._preprocess_atac()
             else:
                 raise ValueError(f"Modality {self.modality} not supported")
+        print(self.cell_type)
+        print(self.mdata.obs.columns)
         if self.cell_type in self.mdata.obs.columns:
             self.le = LabelEncoder()
             self.cell_types = self.le.fit_transform(self.mdata.obs[self.cell_type])

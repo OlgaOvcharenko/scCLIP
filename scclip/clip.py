@@ -198,19 +198,19 @@ class CLIPModel(LitModule):
 
         if dataloader is not None:
             rna_embeds = self._get_batch_features(
-                dataloader, modality="rna", out_dir=out_dir
+                dataloader, modality="rna", out_dir=out_dir, celltype=celltype
             )
             atac_embeds = self._get_batch_features(
-                dataloader, modality="atac", out_dir=out_dir
+                dataloader, modality="atac", out_dir=out_dir, celltype=celltype
             )
 
         if rna is not None:
             rna_embeds = self._get_batch_features(
-                rna.dataloader(), out_dir=out_dir, modality="rna"
+                rna.dataloader(), out_dir=out_dir, modality="rna", celltype=celltype
             )
         if atac is not None:
             atac_embeds = self._get_batch_features(
-                atac.dataloader(), out_dir=out_dir, modality="atac"
+                atac.dataloader(), out_dir=out_dir, modality="atac", celltype=celltype
             )
 
         if atac is not None and rna is not None or dataloader is not None:
