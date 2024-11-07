@@ -21,4 +21,5 @@ conda init
 conda activate myenv
 
 # python3 train_clip.py --data_dir data/Fetal/fetal.h5mu --logit_scale 1
-python3 train_clip.py --data_dir data/simulated/mudata_simulated_full.h5mu --logit_scale 1
+# python3 train_clip.py --data_dir data/simulated/mudata_simulated_full.h5mu --logit_scale 1
+python3 train_clip.py --data_dir data/simulated/mudata_simulated_train.h5mu --logit_scale 1
