@@ -17,6 +17,10 @@ conda activate myenv
 # python3 metrics.py --data human_cite
 # python3 metrics.py --data human_multiome
 
-python3 qr_scclip.py --data simulated
-# python3 qr_scclip.py --data human_cite
-# python3 qr_scclip.py --data human_multiome
+# python3 qr_scclip.py --data simulated --onlyRNA 0
+# python3 qr_scclip.py --data human_cite --onlyRNA 0
+python3 qr_scclip.py --data human_multiome --onlyRNA 0
+
+# python3 qr_scclip.py --data simulated --onlyRNA 1
+# python3 qr_scclip.py --data human_cite --onlyRNA 1
+python3 qr_scclip.py --data human_multiome --onlyRNA 1

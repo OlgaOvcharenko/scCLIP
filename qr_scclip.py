@@ -19,59 +19,52 @@ def get_args():
     parser.add_argument('--data', type=str, required=True,
                         help='Adata path')
 
+    parser.add_argument('--onlyRNA', type=int, required=True,
+                        help='Adata path')
+
     args = parser.parse_args()
     return args
 
 
 args = get_args()
 data = args.data
+onlyRNA = args.onlyRNA
 repeat = 0
 
 data_train = f"{data}_train"
 data_test = f"{data}_test"
 
-
-only_files_train = [f'results/{data_train}/1.0_False_30000_0.00015_/{data_train}/{mod}.h5ad' for mod in ["rna", "atac"]]
-only_files_test = [f'results/{data_train}/1.0_False_30000_0.00015_/{data_test}/{mod}.h5ad' for mod in ["rna", "atac"]]
-
-# results/simulated_train/1.0_False_30000_0.00015_/simulated_test/rna.h5ad
-# results/simulated_test/1.0_False_30000_0.00015_/simulated_test/rna.h5ad
-
-#  concat
 if data == "simulated":
-    adata_RNA = sc.read_h5ad('../concerto-reproducibility/Multimodal_pretraining/adata_RNA_full.h5ad')
-    adata_Protein = sc.read_h5ad('../concerto-reproducibility/Multimodal_pretraining/adata_Protein_full.h5ad')
-
-elif data == "human_multiome":
-    adata_RNA = sc.read_h5ad('../concerto-reproducibility/Multimodal_pretraining/adata_neurips_GEX_multiome_full.h5ad')
-    adata_Protein = sc.read_h5ad('../concerto-reproducibility/Multimodal_pretraining/adata_neurips_ATAC_multiome_full.h5ad')
+    only_files_train = [f'results/{data_train}/1.0_False_30000_0.00015_/{data_train}/{mod}.h5ad' for mod in ["rna", "atac"]]
+    only_files_test = [f'results/{data_train}/1.0_False_30000_0.00015_/{data_test}/{mod}.h5ad' for mod in ["rna", "atac"]]
 
 elif data == "human_cite":
-    adata_RNA = sc.read_h5ad('../concerto-reproducibility/Multimodal_pretraining/adata_neurips_GEX_full.h5ad')
-    adata_Protein = sc.read_h5ad('../concerto-reproducibility/Multimodal_pretraining/adata_neurips_ADT_full.h5ad')
+    only_files_train = [f'results/data/{data}/mudata_{data_train}.h5mu/1.0_False_30000_0.00015_/data/{data}/mudata_{data_train}.h5mu/{mod}.h5ad' for mod in ["rna", "atac"]]
+    only_files_test = [f'results/data/{data}/mudata_{data_train}.h5mu/1.0_False_30000_0.00015_/data/{data}/mudata_{data_test}.h5mu/{mod}.h5ad' for mod in ["rna", "atac"]]
 
-adata_merged = ad.concat([adata_RNA, adata_Protein], axis=1, merge="same")
 
 adata_RNA_train = sc.read_h5ad(only_files_train[0]) 
 adata_Protein_train = sc.read_h5ad(only_files_train[1]) 
-adata_train = ad.concat([adata_RNA_train, adata_Protein_train], axis=1, merge="same")
+adata_train = ad.concat([adata_RNA_train, adata_Protein_train], axis=1, merge="same") if not onlyRNA else adata_RNA_train
 
 adata_RNA_test = sc.read_h5ad(only_files_test[0]) 
 adata_Protein_test = sc.read_h5ad(only_files_test[1]) 
-adata_test= ad.concat([adata_RNA_test, adata_Protein_test], axis=1, merge="same")
+adata_test= ad.concat([adata_RNA_test, adata_Protein_test], axis=1, merge="same") if not onlyRNA else adata_RNA_test
 
-print(adata_train)
-print(adata_test)
+print(adata_train.X.shape)
+print(adata_test.X.shape)
+print(len(adata_train.obs["rna:cell_type_l1"].tolist()))
+# exit()
 
 knn = KNeighborsClassifier(n_neighbors=5)
-knn.fit(adata_train.X, adata_merged.obs["cell_type_l1"].tolist())
+knn.fit(adata_train.X, adata_train.obs["rna:cell_type_l1"].tolist())
 cat_preds = knn.predict(adata_test.X)
 
-cell_types_list = pd.unique(adata_RNA_test.obs['cell_type_l1']).tolist()
-acc = accuracy_score(adata_RNA_test.obs['cell_type_l1'].to_list(), cat_preds)
-f1 = f1_score(adata_RNA_test.obs['cell_type_l1'].to_list(), cat_preds, labels=cell_types_list, average=None)
-f1_weighted = f1_score(adata_RNA_test.obs['cell_type_l1'].to_list(), cat_preds, labels=cell_types_list, average='weighted')
-f1_macro = f1_score(adata_RNA_test.obs['cell_type_l1'].to_list(), cat_preds, labels=cell_types_list, average='macro')
+cell_types_list = pd.unique(adata_train.obs["rna:cell_type_l1"]).tolist()
+acc = accuracy_score(adata_test.obs["rna:cell_type_l1"].tolist(), cat_preds)
+f1 = f1_score(adata_test.obs["rna:cell_type_l1"].tolist(), cat_preds, labels=cell_types_list, average=None)
+f1_weighted = f1_score(adata_test.obs["rna:cell_type_l1"].tolist(), cat_preds, labels=cell_types_list, average='weighted')
+f1_macro = f1_score(adata_test.obs["rna:cell_type_l1"].tolist(), cat_preds, labels=cell_types_list, average='macro')
 f1_median = np.median(f1)
 
 print(f"Per class {cell_types_list} F1 {f1}")
