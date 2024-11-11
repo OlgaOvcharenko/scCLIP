@@ -76,7 +76,7 @@ if __name__ == "__main__":
         "--use_val", action=argparse.BooleanOptionalAction, default=True
     )
     parser.add_argument("--test_data", type=str, default="ADRD")
-    parser.add_argument("--cell_type", type=str, default="cell_type")
+    parser.add_argument("--cell_type", type=str, default="rna:cell_type")
     parser.add_argument(
         "--use_seq", action=argparse.BooleanOptionalAction, default=False
     )

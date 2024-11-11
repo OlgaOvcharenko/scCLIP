@@ -516,7 +516,7 @@ _multiome_datasets = {
     "Cortex": mdata_dir / "Cortex-2021.h5mu",
     "fetal": mdata_dir / "fetal.h5mu",
     "simulated": mdata_dir / "mudata_simulated_full.h5mu",
-    "simulated_train": mdata_dir / "mudata_simulated_train.h5mu",
+    "simulated_train": Path(__file__).parent.parent / "data/simulated" / "mudata_simulated_train.h5mu",
     "simulated_test": mdata_dir / "mudata_simulated_test.h5mu",
     "human_cite": mdata_dir / "mudata_human_cite_full.h5mu",
     "human_cite_train": mdata_dir / "mudata_human_cite_train.h5mu",
@@ -754,6 +754,8 @@ _dataset = {"atac": ATACDataset, "rna": RNADataset, "multiome": MultiOmeDataset}
 class MixDataModule(BaseDataModule):
     def __init__(self, data_dir=None, modality="multiome", *args, **kwargs):
         self.modality = modality
+        # print(data_dir)
+        # print(_datasets[modality][data_dir])
         if data_dir in _datasets[modality]:
             data_dir = _datasets[modality][data_dir]
         super().__init__(str(data_dir), *args, **kwargs)
