@@ -60,9 +60,12 @@ adata_RNA_test = sc.read_h5ad(only_files_test[0])
 adata_Protein_test = sc.read_h5ad(only_files_test[1]) 
 adata_test= ad.concat([adata_RNA_test, adata_Protein_test], axis=1, merge="same")
 
+print(adata_train)
+print(adata_test)
+
 knn = KNeighborsClassifier(n_neighbors=5)
-knn.fit(adata_train, adata_merged.obs["cell_type_l1"].tolist())
-cat_preds = knn.predict(adata_test)
+knn.fit(adata_train.X, adata_merged.obs["cell_type_l1"].tolist())
+cat_preds = knn.predict(adata_test.X)
 
 cell_types_list = pd.unique(adata_RNA_test.obs['cell_type_l1']).tolist()
 acc = accuracy_score(adata_RNA_test.obs['cell_type_l1'].to_list(), cat_preds)

@@ -14,9 +14,9 @@ mkdir -p logs
 conda activate myenv
 
 # python3 metrics.py --data simulated
-python3 metrics.py --data human_cite
+# python3 metrics.py --data human_cite
 # python3 metrics.py --data human_multiome
 
-# python3 qr_scclip.py --data simulated
+python3 qr_scclip.py --data simulated
 # python3 qr_scclip.py --data human_cite
 # python3 qr_scclip.py --data human_multiome
