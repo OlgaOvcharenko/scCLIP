@@ -25,7 +25,7 @@ class BaseDataset(Dataset):
         binary: bool = True,
         verbose: bool = False,
         use_seq: bool = False,
-        cell_type: str = "cell_type",
+        cell_type: str = "rna:cell_type_l1",
     ):
         super().__init__()
         self.data_dir = data_dir if type(data_dir) == str else str(data_dir)
@@ -103,20 +103,20 @@ class BaseDataset(Dataset):
             else:
                 reverse = False
             assert (
-                split in self.mdata.obs["cell_type"].unique()
+                split in self.mdata.obs["rna:cell_type_l1"].unique()
             ), f"Cell type {split} not found"
             if reverse:
-                train_idx = np.where(self.mdata.obs["cell_type"] != split)[0]
-                val_idx = np.where(self.mdata.obs["cell_type"] == split)[0]
+                train_idx = np.where(self.mdata.obs["rna:cell_type_l1"] != split)[0]
+                val_idx = np.where(self.mdata.obs["rna:cell_type_l1"] == split)[0]
             else:
-                train_idx = np.where(self.mdata.obs["cell_type"] == split)[0]
-                val_idx = np.where(self.mdata.obs["cell_type"] != split)[0]
+                train_idx = np.where(self.mdata.obs["rna:cell_type_l1"] == split)[0]
+                val_idx = np.where(self.mdata.obs["rna:cell_type_l1"] != split)[0]
 
             return Subset(self, train_idx), Subset(self, val_idx)
 
         elif isinstance(split, list):  # split multiple cell types # TO DO
-            train_idx = self.mdata.obs[self.mdata.obs["cell_type"].isin(split)].index
-            val_idx = self.mdata.obs[~self.mdata.obs["cell_type"].isin(split)].index
+            train_idx = self.mdata.obs[self.mdata.obs["rna:cell_type_l1"].isin(split)].index
+            val_idx = self.mdata.obs[~self.mdata.obs["rna:cell_type_l1"].isin(split)].index
             return Subset(self, train_idx), Subset(self, val_idx)
 
     def random_split(self, train_ratio=0.9):
@@ -403,7 +403,7 @@ class ATACDataset(BaseDataset):
             x = self._transform_atac(x)
         batch = {"atac": x}
         if self.cell_types is not None:
-            batch.update({"cell_type": self.cell_types[index]})
+            batch.update({"rna:cell_type_l1": self.cell_types[index]})
         return batch
 
 
@@ -422,7 +422,7 @@ class RNADataset(BaseDataset):
             x = self._transform_rna(x)
         batch = {"rna": x}
         if self.cell_types is not None:
-            batch.update({"cell_type": self.cell_types[index]})
+            batch.update({"rna:cell_type_l1": self.cell_types[index]})
         return batch
 
 
@@ -444,7 +444,7 @@ class MultiOmeDataset(BaseDataset):
         if self.verbose:
             print("Time to get item: {} s".format(time.time() - t0), flush=True)
         if self.cell_types is not None:
-            x.update({"cell_type": self.cell_types[index]})
+            x.update({"rna:cell_type_l1": self.cell_types[index]})
         return x
 
 
@@ -517,7 +517,7 @@ _multiome_datasets = {
     "fetal": mdata_dir / "fetal.h5mu",
     "simulated": mdata_dir / "mudata_simulated_full.h5mu",
     "simulated_train": Path(__file__).parent.parent / "data/simulated" / "mudata_simulated_train.h5mu",
-    "simulated_test": mdata_dir / "mudata_simulated_test.h5mu",
+    "simulated_test": Path(__file__).parent.parent / "data/simulated" / "mudata_simulated_test.h5mu",
     "human_cite": mdata_dir / "mudata_human_cite_full.h5mu",
     "human_cite_train": mdata_dir / "mudata_human_cite_train.h5mu",
     "human_cite_test": mdata_dir / "mudata_human_cite_test.h5mu",

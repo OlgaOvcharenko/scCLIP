@@ -168,7 +168,7 @@ class CLIPModel(LitModule):
         return atac_features
 
     def _get_batch_features(
-        self, dataloader, modality="rna", cell_type="cell_type", out_dir="."
+        self, dataloader, modality="rna", cell_type="rna:cell_type_l1", out_dir="."
     ):
         if isinstance(dataloader.dataset, Subset):
             obs = dataloader.dataset.dataset.mdata.obs.iloc[dataloader.dataset.indices]
@@ -190,7 +190,7 @@ class CLIPModel(LitModule):
         return adata
 
     def get_batch_features(
-        self, dataloader, atac=None, rna=None, celltype="cell_type", out_dir="."
+        self, dataloader, atac=None, rna=None, celltype="rna:cell_type_l1", out_dir="."
     ):
         log = create_logger("", fh=out_dir + "/log.txt")
         if not self.config.normalize:
@@ -240,7 +240,7 @@ class CLIPModel(LitModule):
                     metric="cosine",
                     save="_concat.png",
                 )
-                # plot_paired_umap(concat_embeds, color=celltype, save=os.path.join(out_dir, 'umap_concat.png'))
+                plot_paired_umap(concat_embeds, color=celltype, save=os.path.join(out_dir, 'umap_concat.png'))
             else:
                 plot_umap(
                     concat_embeds, color=celltype, metric="cosine", save="_concat.png"

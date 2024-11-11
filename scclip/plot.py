@@ -65,7 +65,7 @@ def plot_umap(
 
 def plot_paired_umap(
     adata,
-    color=["cell_type", "modality"],
+    color=["rna:cell_type_l1", "modality"],
     save=None,
     n_neighbors=30,
     min_dist=0.5,
@@ -94,7 +94,7 @@ def plot_paired_umap(
     )
     plt.subplots_adjust(wspace=wspace)
 
-    sc.pl.umap(adata, color="cell_type", ax=axs[0], show=False, legend_loc="on data")
+    sc.pl.umap(adata, color="rna:cell_type_l1", ax=axs[0], show=False, legend_loc="on data")
     sc.pl.umap(adata, color="modality", ax=axs[1], show=False)
     concat = adata.obsm["X_umap"]
     plt.plot(

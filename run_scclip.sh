@@ -21,6 +21,15 @@ conda init
 conda activate myenv
 
 # python3 train_clip.py --data_dir data/Fetal/fetal.h5mu --logit_scale 1
+
 # python3 train_clip.py --data_dir data/simulated/mudata_simulated_full.h5mu --logit_scale 1
+# python3 train_clip.py --data_dir data/human_cite/mudata_human_cite_full.h5mu --logit_scale 1
+# python3 train_clip.py --data_dir data/human_multiome/mudata_human_multiome_full.h5mu --logit_scale 1
+
 # python3 train_clip.py --data_dir simulated_train --logit_scale 1
-python3 train_clip.py --data_dir data/human_multiome/mudata_human_multiome_full.h5mu --logit_scale 1
+# python3 train_clip.py --data_dir simulated_test --logit_scale 1 --checkpoint results/simulated_train/1.0_False_30000_0.00015_/lightning_logs/checkpoints/epoch=85-step=30000.ckpt
+
+# python3 train_clip.py --data_dir data/human_cite/mudata_human_cite_train.h5mu --logit_scale 1
+python3 train_clip.py --data_dir data/human_multiome/mudata_human_multiome_train.h5mu --logit_scale 1
+# python3 train_clip.py --data_dir data/human_cite/mudata_human_cite_test.h5mu --logit_scale 1 --checkpoint results/simulated_train/1.0_False_30000_0.00015_/lightning_logs/checkpoints/epoch=85-step=30000.ckpt
+

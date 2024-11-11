@@ -32,15 +32,15 @@ class Monitor(Callback):
         self.dataset = dm.dataset
         val_dl = dm.val_dataloader()
         self.example_array = next(iter(val_dl))
-        self.example_array["cell_type"] = self.dataset.le.inverse_transform(
-            self.example_array["cell_type"]
+        self.example_array["rna:cell_type_l1"] = self.dataset.le.inverse_transform(
+            self.example_array["rna:cell_type_l1"]
         )
         self.sort_by_labels()
 
         self.metric = metric
 
     def sort_by_labels(self):
-        indices = sort_index_by_classes(self.example_array["cell_type"])
+        indices = sort_index_by_classes(self.example_array["rna:cell_type_l1"])
         for k, v in self.example_array.items():
             if k == "batch":
                 if self.dataset.n_batch > 1:
@@ -79,13 +79,13 @@ class Monitor(Callback):
         rna_embeds = rna_embeds.detach().cpu().numpy()
         concat_embeds = np.concatenate([atac_embeds, rna_embeds])
         concat_labels = np.concatenate(
-            [self.example_array["cell_type"], self.example_array["cell_type"]]
+            [self.example_array["rna:cell_type_l1"], self.example_array["rna:cell_type_l1"]]
         )
         domain_labels = np.array(
             ["atac"] * len(atac_embeds) + ["rna"] * len(rna_embeds)
         )
         obs = pd.DataFrame(
-            [concat_labels, domain_labels], index=["cell_type", "modality"]
+            [concat_labels, domain_labels], index=["rna:cell_type_l1", "modality"]
         ).T
         paired = AnnData(concat_embeds, obs=obs)
 
@@ -165,8 +165,8 @@ class Monitor(Callback):
         )  # [:len(atac_embeds), len(atac_embeds):]
         fig = plot_heatmap(
             X,
-            obs_names=paired.obs["cell_type"],
-            var_names=paired.obs["cell_type"],
+            obs_names=paired.obs["rna:cell_type_l1"],
+            var_names=paired.obs["rna:cell_type_l1"],
             sort=False,
             cmap="RdBu",
         )

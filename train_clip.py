@@ -192,6 +192,7 @@ if __name__ == "__main__":
         )
 
     if not args.fast_dev_run:
+        print("Not fast dev run")
         out_dir = os.path.join(args.default_root_dir, args.data_dir)
         os.makedirs(out_dir, exist_ok=True)
 
